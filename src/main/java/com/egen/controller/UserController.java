@@ -6,10 +6,8 @@ import com.egen.services.UserService;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
@@ -19,11 +17,18 @@ import java.util.UUID;
 public class UserController {
 	private static Logger logger = Logger.getLogger(UserController.class);
 
-	@RequestMapping(value="/createUser",method = RequestMethod.POST)
+	@ResponseBody
+	@RequestMapping(consumes="application/json",
+			produces="application/json",value="/createUser",method = RequestMethod.POST)
 	public ResponseEntity<UserResponse> createUser(@RequestBody User user){
 		User userData= new User();
 		UserResponse userResponse =new UserResponse();
-		userData.setId(UUID.randomUUID());
+		if(user.getId()!=null){
+			userData.setId(user.getId());
+		}else{
+			userData.setId(UUID.randomUUID());
+		}
+
 		userData.setFirstName(user.getFirstName());
 		userData.setMiddleName(user.getMiddleName());
 		userData.setLastName(user.getLastName());
@@ -52,7 +57,7 @@ public class UserController {
 		UserService userservice= new UserService();
 		UserResponse updateUserResponse = new UserResponse();
 		updateUserResponse =userservice.updateUser(model);
-		logger.info("Updated user data  is  :"+model);
+		logger.info("Updated user data  is  :"+updateUserResponse);
 
 		return new ResponseEntity<UserResponse>(updateUserResponse,HttpStatus.OK);
 

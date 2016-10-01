@@ -102,7 +102,7 @@ public class UserDAO {
         }catch(Exception e){
             LOGGER.trace("Exception While updating User is  :" + e);
             userResponse.setSuccess(false);
-            userResponse.setDescription("User not Created");
+            userResponse.setDescription("User not updated");
             userResponse.setErrorCode(1);
             userResponse.setUserList(null);
             return userResponse;
