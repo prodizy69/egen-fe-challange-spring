@@ -1,6 +1,8 @@
 package com.egen.DAO;
 
 import com.egen.DB.HibernateUtil;
+import com.egen.ErrorCodes.ErrorCodes;
+import com.egen.ErrorCodes.ErrorMessages;
 import com.egen.Pojo.User;
 import com.egen.UserResponse.UserResponse;
 import org.apache.log4j.Logger;
@@ -12,31 +14,44 @@ import java.util.*;
 /**
  * Created by Sateesh on 10/1/2016.
  */
+/*
+    UserDAO.java, which uses to invoke Hibernate connection and do the respective operations.
+ */
 public class UserDAO {
     private static Logger LOGGER =Logger.getLogger(UserDAO.class);
     public static Session session;
 
     public UserResponse createUser(User user){
         UserResponse userResponse =new UserResponse();
-        session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        try{
-            session.save(user);
-            session.getTransaction().commit();
-            session.close();
-            userResponse.setSuccess(true);
-            userResponse.setDescription("Created user successfully");
-            userResponse.setErrorCode(0);
-            List<User> users =new ArrayList<User>();
-            users.add(user);
-            userResponse.setUserList(users);
-            return userResponse;
+        if(user.getId()!=null){
+            session = HibernateUtil.getSessionFactory().openSession();
+            session.beginTransaction();
+            try{
 
-        }catch (Exception e){
-            LOGGER.trace("Exception While Creating User is :" + e);
+                session.save(user);
+                session.getTransaction().commit();
+                session.close();
+                userResponse.setSuccess(true);
+                userResponse.setDescription(ErrorMessages.USER_CREATED);
+                userResponse.setErrorCode(ErrorCodes.ERROR_CODE_CREATE_USER_0);
+                List<User> users =new ArrayList<User>();
+                users.add(user);
+                userResponse.setUserList(users);
+                return userResponse;
+
+            }catch (Exception e){
+                LOGGER.trace("Exception While Creating User is :" + e);
+                userResponse.setSuccess(false);
+                userResponse.setDescription(ErrorMessages.EXCEPTION);
+                userResponse.setErrorCode(ErrorCodes.ERROR_CODE_CREATE_USER_5);
+                userResponse.setUserList(null);
+                return userResponse;
+            }
+
+        }else{
             userResponse.setSuccess(false);
-            userResponse.setDescription("User not Created");
-            userResponse.setErrorCode(1);
+            userResponse.setDescription(ErrorMessages.USER_NOT_CREATED);
+            userResponse.setErrorCode(ErrorCodes.ERROR_CODE_CREATE_USER_1);
             userResponse.setUserList(null);
             return userResponse;
         }
@@ -53,15 +68,15 @@ public class UserDAO {
 
             session.close();
             userResponse.setSuccess(true);
-            userResponse.setDescription("Fetched " + Users.size() + "users successfully");
-            userResponse.setErrorCode(0);
+            userResponse.setDescription("Fetched " + Users.size() + " users successfully");
+            userResponse.setErrorCode(ErrorCodes.ERROR_CODE_GET_USERS_0);
             userResponse.setUserList(Users);
             return userResponse;
         }catch (Exception e){
             LOGGER.trace("Exception While getting Users is  :" + e);
             userResponse.setSuccess(false);
-            userResponse.setDescription("Users not Fetched");
-            userResponse.setErrorCode(1);
+            userResponse.setDescription(ErrorMessages.USERS_NOT_FETCHED);
+            userResponse.setErrorCode(ErrorCodes.ERROR_CODE_GET_USERS_1);
             userResponse.setUserList(null);
             return userResponse;
         }
@@ -84,16 +99,16 @@ public class UserDAO {
                 session.getTransaction().commit();
                 session.close();
                 userResponse.setSuccess(true);
-                userResponse.setDescription("Updated user successfully");
-                userResponse.setErrorCode(0);
+                userResponse.setDescription(ErrorMessages.UPDATED_USER);
+                userResponse.setErrorCode(ErrorCodes.ERROR_CODE_UPDATE_USERS_0);
                 List<User> users =new ArrayList<User>();
                 users.add(user);
                 userResponse.setUserList(users);
                 return userResponse;
             }else{
                 userResponse.setSuccess(false);
-                userResponse.setDescription("User is not found");
-                userResponse.setErrorCode(1);
+                userResponse.setDescription(ErrorMessages.USER_NOT_FOUND);
+                userResponse.setErrorCode(ErrorCodes.ERROR_CODE_UPDATE_USERS_2);
                 userResponse.setUserList(null);
                 return userResponse;
             }
@@ -102,8 +117,8 @@ public class UserDAO {
         }catch(Exception e){
             LOGGER.trace("Exception While updating User is  :" + e);
             userResponse.setSuccess(false);
-            userResponse.setDescription("User not updated");
-            userResponse.setErrorCode(1);
+            userResponse.setDescription(ErrorMessages.USER_NOT_UPDATED);
+            userResponse.setErrorCode(ErrorCodes.ERROR_CODE_UPDATE_USERS_1);
             userResponse.setUserList(null);
             return userResponse;
         }

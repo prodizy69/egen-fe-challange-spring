@@ -51,12 +51,12 @@ public class UserTest extends SpringMvcApplicationTests {
     @Test
     public void createUser() throws Exception {
 
-        User user =new User(uuid,"Sateesh","Lenin","Dubasi",26,"M","9949918498","500056");
+        User positiveUser =new User(uuid,"Sateesh","Lenin","Dubasi",26,"M","9949918498","500056");
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson=ow.writeValueAsString(user );
+        String requestJson=ow.writeValueAsString(positiveUser);
 
         mockMvc.perform(post("/createUser").contentType(APPLICATION_JSON_UTF8)
                 .content(requestJson))
@@ -65,6 +65,7 @@ public class UserTest extends SpringMvcApplicationTests {
 
 
     }
+
     @Test
     public void getUsers() throws Exception {
         mockMvc.perform(get("/getUsers").contentType(APPLICATION_JSON_UTF8)
@@ -72,21 +73,43 @@ public class UserTest extends SpringMvcApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
 
-
     }
+
+    /*
+    Positive test case for update user, where you find the user from database
+     */
     @Test
     public void updateUser() throws Exception {
 
-        User user = new User(uuid,"India","America","Germany",28,"M","9949978956","526356");
+        User positiveUser = new User(uuid,"India","America","Germany",28,"M","9949978956","526356");
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson=ow.writeValueAsString(user);
+        String requestJson=ow.writeValueAsString(positiveUser);
 
         mockMvc.perform(post("/updateUser").contentType(APPLICATION_JSON_UTF8).content(requestJson)
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
+
+
+    }
+    /*
+    Negative test case for update user, where you don't find the user from database
+     */
+    @Test
+    public void updateUser_2() throws Exception {
+        UUID uuid1 =UUID.randomUUID();
+        User negativeUser = new User(uuid1,"India","America","Germany",28,"M","9949978956","526356");
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson=ow.writeValueAsString(negativeUser);
+
+        mockMvc.perform(post("/updateUser").contentType(APPLICATION_JSON_UTF8).content(requestJson)
+        )
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false));
 
 
     }

@@ -1,5 +1,6 @@
 package com.egen.controller;
 
+import com.egen.ErrorCodes.ErrorCodes;
 import com.egen.Pojo.User;
 import com.egen.UserResponse.UserResponse;
 import com.egen.services.UserService;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
-
+/*
+ UserController.java, which uses to expose the rest services for User. Create a user, get the users and update the same user with new data
+ */
 
 @RestController
 public class UserController {
@@ -40,6 +43,9 @@ public class UserController {
 		userResponse =userservice.createUser(userData);
 
 		logger.info("UserData is  :"+user);
+		if(userResponse.getErrorCode()== ErrorCodes.ERROR_CODE_CREATE_USER_1){
+			return new ResponseEntity<UserResponse>(userResponse, HttpStatus.EXPECTATION_FAILED);
+		}
 
 		return new ResponseEntity<UserResponse>(userResponse, HttpStatus.OK);
 	}
@@ -53,12 +59,14 @@ public class UserController {
 		return new ResponseEntity<UserResponse>(userResponse,HttpStatus.OK);
 	}
 	@RequestMapping(value = "/updateUser",method = RequestMethod.POST)
-	public ResponseEntity<UserResponse> updateUser(@RequestBody User model,HttpServletRequest req) {
+	public ResponseEntity<UserResponse> updateUser(@RequestBody User model, HttpServletRequest req) {
 		UserService userservice= new UserService();
 		UserResponse updateUserResponse = new UserResponse();
 		updateUserResponse =userservice.updateUser(model);
 		logger.info("Updated user data  is  :"+updateUserResponse);
-
+		if(updateUserResponse.getErrorCode()==ErrorCodes.ERROR_CODE_UPDATE_USERS_2){
+			return new ResponseEntity<UserResponse>(updateUserResponse,HttpStatus.NOT_FOUND);
+		}
 		return new ResponseEntity<UserResponse>(updateUserResponse,HttpStatus.OK);
 
 	}

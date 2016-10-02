@@ -8,6 +8,10 @@ import java.util.List;
 /**
  * Created by Sateesh on 10/1/2016.
  */
+/*
+        UserResponse.java
+        Response of the Service will be sent in this format, based on the response from server.
+ */
 public class UserResponse implements Serializable{
     private static final long serialVersionUID = -1798070786993154676L;
 
